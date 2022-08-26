@@ -1,5 +1,6 @@
 package com.project.bookstore.service;
 import com.project.bookstore.domain.Book;
+import com.project.bookstore.exceptinHandeling.BookNotFoundException;
 import com.project.bookstore.repository.BookRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -20,11 +21,11 @@ public class BookService {
     }
 
     public Book findBookById(Long id) {
-        return bookRepository.findBookById(id);
+        return bookRepository.findBookById(id).orElseThrow(()->new BookNotFoundException("Book by id"+id+"was not found"));
     }
 
     public void deleteBook(Long id){
-        bookRepository.findBookById(id);
+        bookRepository.deleteById(id);
     }
 
     public Book updateBook(Book book){

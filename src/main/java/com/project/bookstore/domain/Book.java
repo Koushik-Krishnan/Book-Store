@@ -1,14 +1,18 @@
 package com.project.bookstore.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity(name = "book_store")
 @Table(name = "book")
-public class Book{
+@JsonIgnoreProperties
+public class Book implements Serializable{
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="book_id")
     private Long id;
 
@@ -24,30 +28,27 @@ public class Book{
     @Column(name="book_rating")
     private float rating;
 
-    @Column(name="book_category")
-    @Enumerated(EnumType.STRING)
-    private Category category;
-
     @Column(name="number_of_pages")
     private int numberOfPages;
 
     @Column(name="book_publication_date")
     private LocalDate dateOfPublication;
 
-    public Book(Long id, String title, String author, float price, float rating, Category category, int numberOfPages, LocalDate dateOfPublication) {
+    @Column(name="book_image_URL")
+    private String imageUrl;
+
+    public Book(Long id, String title, String author, float price, float rating, int numberOfPages, LocalDate dateOfPublication, String imageUrl) {
         this.id = id;
         this.title = title;
         this.author = author;
         this.price = price;
         this.rating = rating;
-        this.category = category;
         this.numberOfPages = numberOfPages;
         this.dateOfPublication = dateOfPublication;
+        this.imageUrl = imageUrl;
     }
 
-    public Book() {
-    }
-
+    public Book() {}
 
     public Long getId() {
         return id;
@@ -89,14 +90,6 @@ public class Book{
         this.rating = rating;
     }
 
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
     public int getNumberOfPages() {
         return numberOfPages;
     }
@@ -112,5 +105,27 @@ public class Book{
     public void setDateOfPublication(LocalDate dateOfPublication) {
         this.dateOfPublication = dateOfPublication;
     }
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", price=" + price +
+                ", rating=" + rating +
+                ", numberOfPages=" + numberOfPages +
+                ", dateOfPublication=" + dateOfPublication +
+                ", imageUrl='" + imageUrl + '\'' +
+                '}';
+    }
+
 
 }
