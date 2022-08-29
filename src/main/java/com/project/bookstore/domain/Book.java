@@ -2,6 +2,7 @@ package com.project.bookstore.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.data.redis.core.RedisHash;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -10,7 +11,9 @@ import java.time.LocalDate;
 @Entity(name = "book_store")
 @Table(name = "book")
 @JsonIgnoreProperties
+@RedisHash("Book")
 public class Book implements Serializable{
+    private static final long serialVersionUID = 7156526077883281623L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="book_id")
