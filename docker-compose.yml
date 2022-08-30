@@ -1,7 +1,7 @@
 services:
   app-server:
     container_name: backend-server
-    image: varnaa/book-store
+    image: 'koushik/book-store'
     ports:
       - 8080:8080
     restart: always
@@ -10,7 +10,7 @@ services:
 
   database:
     container_name: db
-    image: oscarfonts/h2
+    image: 'oscarfonts/h2'
     ports:
       - 1521:1521
       - 81:81
@@ -18,11 +18,22 @@ services:
     environment:
       H2_OPTIONS: -ifNotExists
     volumes:
-      - /Users/varnaa/Documents/db:/opt/h2-data
+      - C:\Users\Koushik\Desktop\TCL\My bookstore\backend\bookstore\src\main\resources\H2_database:/opt/h2-data
+
+  app-client:
+    container_name: bookstore_frontend
+    image: 'frontend'
+    ports:
+      - 8081:80
+    restart: always
+    depends_on:
+      - app-server
+      - database
+      - cache
 
   cache:
     container_name: redis-cache
-    image: redis
+    image: 'redis'
     ports:
       - 6379
     restart: always
