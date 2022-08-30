@@ -19,3 +19,13 @@ services:
       H2_OPTIONS: -ifNotExists
     volumes:
       - /Users/varnaa/Documents/db:/opt/h2-data
+
+  cache:
+    container_name: redis-cache
+    image: redis
+    ports:
+      - 6379
+    restart: always
+    depends_on:
+      - database
+      - app-server
