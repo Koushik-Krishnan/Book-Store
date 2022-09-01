@@ -1,7 +1,25 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: backend
+  labels:
+    name: backend
+spec:
+  ports:
+    - nodePort: 30163
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app: backend
+  type: NodePort
+
+---
+
 apiVersion: apps/v1
 kind: Deployment # Kubernetes resource kind we are creating
 metadata:
-  name: bookstore_backend
+  name: backend
 spec:
   selector:
     matchLabels:
@@ -13,7 +31,7 @@ spec:
         app: backend
     spec:
       containers:
-        - name: bookstore_backend
+        - name: backend
           image: koushik/book-store:latest
           # Image that will be used to containers in the cluster
           imagePullPolicy: IfNotPresent

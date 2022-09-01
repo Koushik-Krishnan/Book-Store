@@ -1,22 +1,32 @@
-apiVersion: apps/v1
-kind: Deployment # Kubernetes resource kind we are creating
+apiVersion: v1
+kind: Service
 metadata:
-  name: bookstore_backend
+  name: redis-master
+  labels:
+    app: redis
 spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
   selector:
-    matchLabels:
-      app: backend
-  replicas: 1 # Number of replicas that will be created for this deployment
+    app: redis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-master
+spec:
+  replicas: 1
   template:
     metadata:
       labels:
-        app: backend
+        app: redis
     spec:
+      hostname: redis-cache
       containers:
-        - name: bookstore_backend
-          image: koushik/book-store:latest
-          # Image that will be used to containers in the cluster
+        - name: redis-cache
+          image: redis
           imagePullPolicy: IfNotPresent
+          command: redis-server --port 6379 --bind 0.0.0.0 --protected-mode no
           ports:
-            - containerPort: 8080
-# The port that the container is running on in the cluster
+            - containerPort: 6379

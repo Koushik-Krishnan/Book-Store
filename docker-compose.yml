@@ -40,3 +40,4 @@ services:
     depends_on:
       - database
       - app-server
+    command: redis-server --port 6379 --bind 0.0.0.0 --protected-mode no

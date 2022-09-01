@@ -1,22 +1,36 @@
-apiVersion: apps/v1
-kind: Deployment # Kubernetes resource kind we are creating
-metadata:
-  name: bookstore_backend
-spec:
-  selector:
+apiVersion: apps/v1 # For versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:   # Data that helps  uniquely identify the object (using name, UID and namespace)
+  name: bookstore_frontend
+spec:  # What state you desire for the object
+  selector:  # The selector field defines how the deployment finds which pod to manage
     matchLabels:
-      app: backend
-  replicas: 1 # Number of replicas that will be created for this deployment
+      app: bookstore_frontend
+  replicas: 1  # Tells the deployment to run 3 pods matching the template
   template:
     metadata:
-      labels:
-        app: backend
+      labels:  # Labels are used as indentifying attributes for objects such as pods and replication controller.
+        app: bookstore_frontend
     spec:
       containers:
-        - name: bookstore_backend
-          image: koushik/book-store:latest
-          # Image that will be used to containers in the cluster
+        - name: bookstore_frontend
+          image: frontend
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8080
-# The port that the container is running on in the cluster
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookstore_frontend
+  labels:
+    name: bookstore_frontend
+spec:
+  ports:
+    - nodePort: 30170 # make the service available to network requests from external clients
+      port: 80        # access the service via external port no
+      targetPort: 80  # port number that container listening on
+      protocol: TCP
+  selector:
+    app: bookstore_frontend
+  type: NodePort     # which expose the application on a port across a each of your nodes
