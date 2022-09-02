@@ -1,0 +1,113 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: h2-db
+  labels:
+    app: h2-db
+  annotations:
+    volume.alpha.kubernetes.io/storage-class: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 0.05Gi
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: h2-db
+  labels:
+    app: h2-db
+  annotations:
+    volume.alpha.kubernetes.io/storage-class: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 0.05Gi
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: h2-db
+  labels:
+    app: h2-db
+spec:
+  ports:
+    - port: 8082
+      name: web
+    - port: 9092
+      name: tcp
+  selector:
+    app: h2-db
+
+---
+
+apiVersion: apps/v1
+kind: Ingress
+metadata:
+  name: h2-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - http:
+        paths:
+          - path:/
+        backend:
+          serviceName: h2-db
+          servicePort: 8082
+      host: h2-web.localhost
+    - http:
+        paths:
+          - path:/
+        backend:
+          serviceName: h2-db
+          servicePort: 9092
+      host: h2-tcp.localhost
+
+    - --tcp-services-configmap=$(POD_NAMESPACE)/tcp-services
+    - --udp-services-configmap=$(POD_NAMESPACE)/udp-services
+
+  containers:
+    - args:
+      - /nginx-ingress-controller
+      - --default-backend-service=default/pki-nginx-ingress-default-backend
+      - --election-id=ingress-controller-leader
+      - --ingress-class=nginx
+      - --configmap=default/pki-nginx-ingress-controller
+      - --tcp-services-configmap=$(POD_NAMESPACE)/tcp-services
+      - --udp-services-configmap=$(POD_NAMESPACE)/udp-services
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+      name: tcp-services
+      namespace: default
+      data:
+      "9092": default/h2-db:9092
+
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+    - name: http
+      nodePort: 32231
+      port: 80
+      protocol: TCP
+      targetPort: http
+    - name: https
+      nodePort: 30370
+      port: 443
+      protocol: TCP
+      targetPort: https
+    - name: h2-tcp
+      nodePort: 30371
+      port: 9092
+      protocol: TCP
+      targetPort: 9092
